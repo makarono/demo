@@ -1,0 +1,74 @@
+version: '3'
+
+services:
+  frontend:
+    image: "${AWS_ACCOUNT}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/frontend:latest"
+    container_name: frontend
+    platform: ${PLATFORM}
+    build:
+      context: ./frontend
+    ports:
+      - 80:80
+    networks:
+      - demo
+
+  producer:
+    image: "${AWS_ACCOUNT}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/producer:latest"
+    container_name: producer
+    platform: ${PLATFORM}
+    build:
+      context: ./producer
+    ports:
+      - "5080:80"
+    depends_on:
+      - redis
+      - mysql
+    env_file:
+      - .env
+    networks:
+      - demo
+
+  consumer-go:
+    image: "${AWS_ACCOUNT}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/consumer-go:latest"
+    container_name: consumer-go
+    platform: ${PLATFORM}
+    build:
+      context: ./consumer-go
+    depends_on:
+      - redis
+      - mysql
+    env_file:
+      - .env
+    networks:
+      - demo
+
+  redis:
+    image: "redis:7.0.11-alpine3.18"
+    container_name: redis
+    platform: ${PLATFORM}
+    ports:
+      - "6379:6379"
+    networks:
+      - demo
+
+  mysql:
+    restart: always
+    image: mysql:8.0
+    platform: ${PLATFORM}
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    env_file:
+      - .env
+    volumes:
+      - /tmp/mysql-data:/var/lib/mysql #rm -rf /tmp/mysql-data/ && mkdir /tmp/mysql-data/
+      - ./mysql/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+    networks:
+      - demo
+
+networks:
+  demo:

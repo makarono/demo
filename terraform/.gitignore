@@ -1,0 +1,28 @@
+# Terraform .terraform directory
+.terraform/
+*terraform-outplan*
+
+# Terraform tfstate files
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Crash log files
+crash.log
+
+# Exclude sensitive files containing credentials, API keys, etc.
+*.tfvars
+
+# Exclude override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Exclude generated plans
+*.tfplan
+*.tfplan.json
+
+# Exclude CLI configuration files
+.terraformrc
+terraform.rc
