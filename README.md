@@ -1,4 +1,4 @@
-# Glooko demo project
+# n demo project
 ## Description
 # Application Overview
 
